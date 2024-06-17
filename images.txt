@@ -1,2 +1,6 @@
 hagb/docker-easyconnect
 hagb/docker-atrust
+stonith404/pingvin-share
+yidadaa/chatgpt-next-web
+lanol/filecodebox
+fogforest/yesplaymusic
