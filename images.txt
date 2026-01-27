@@ -4,3 +4,5 @@ stonith404/pingvin-share
 yidadaa/chatgpt-next-web
 lanol/filecodebox
 fogforest/yesplaymusic
+ghcr.io/vert-sh/vert
+ghcr.io/alam00000/bentopdf
