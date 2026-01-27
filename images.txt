@@ -1,9 +1,12 @@
 hagb/docker-easyconnect
 hagb/docker-easyconnect:7.6.7
 hagb/docker-atrust
+lobehub/lobe-chat
 stonith404/pingvin-share
+openlistteam/openlist
 yidadaa/chatgpt-next-web
 lanol/filecodebox
 fogforest/yesplaymusic
 ghcr.io/vert-sh/vert
 ghcr.io/alam00000/bentopdf
+ghcr.io/dani-garcia/vaultwarden
