@@ -1,4 +1,5 @@
 hagb/docker-easyconnect
+hagb/docker-easyconnect:7.6.7
 hagb/docker-atrust
 stonith404/pingvin-share
 yidadaa/chatgpt-next-web
