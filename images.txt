@@ -10,4 +10,5 @@ fogforest/yesplaymusic
 ghcr.io/vert-sh/vert
 ghcr.io/alam00000/bentopdf
 ghcr.io/dani-garcia/vaultwarden
+ghcr.io/pocket-id/pocket-id
 ghcr.io/pocket-id/pocket-id:v2
