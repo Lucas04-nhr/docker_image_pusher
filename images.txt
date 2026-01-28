@@ -13,3 +13,6 @@ ghcr.io/alam00000/bentopdf
 ghcr.io/dani-garcia/vaultwarden
 ghcr.io/pocket-id/pocket-id
 ghcr.io/pocket-id/pocket-id:v2
+ghcr.io/sjzar/chatlog:latest
+ghcr.io/sjzar/chatlog:v0.0.31-arm64
+ghcr.io/sjzar/chatlog:v0.0.31-amd64
