@@ -9,6 +9,7 @@ lanol/filecodebox
 fogforest/yesplaymusic
 ghcr.io/vert-sh/vert
 ghcr.io/aottr/ottrbox
+ghcr.io/aottr/ottrbox:1.15.1-dev
 ghcr.io/alam00000/bentopdf
 ghcr.io/dani-garcia/vaultwarden
 ghcr.io/pocket-id/pocket-id
