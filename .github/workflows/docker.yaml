@@ -31,9 +31,8 @@ jobs:
     - name: Maximize build space
       uses: easimon/maximize-build-space@master
       with:
-
-        root-reserve-mb: 2048
-        swap-size-mb: 128
+        root-reserve-mb: 1024
+        swap-size-mb: 512
         remove-dotnet: 'true'
         remove-haskell: 'true'
         # 如果空间还是不够用，可以把以下开启，清理出更多空间
@@ -43,6 +42,13 @@ jobs:
 
     - name: Restart docker
       run: sudo service docker restart
+
+    - name: Initial Docker Cleanup
+      run: |
+        echo "Initial Docker Cleanup"
+        docker system prune -af --volumes
+        docker image prune -a -f
+        docker builder prune -a -f --keep-state
 
     - name: Free up disk space complete
       run: |
@@ -151,6 +157,10 @@ jobs:
             echo "=============================================================================="
             docker rmi $image
             docker rmi $new_image
+            # 更激进的清理策略
+            docker image prune -f
+            docker builder prune -af
+            docker system prune -f --volumes
             echo "磁盘空间清理完毕"
             echo "=============================================================================="
             df -hT
