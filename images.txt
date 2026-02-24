@@ -14,6 +14,7 @@ ghcr.io/aottr/ottrbox:1.15.1-dev
 ghcr.io/aottr/ottrbox:v1.15
 ghcr.io/alam00000/bentopdf
 ghcr.io/dani-garcia/vaultwarden
+ghcr.io/lakr233/assppweb:latest
 ghcr.io/pocket-id/pocket-id
 ghcr.io/pocket-id/pocket-id:v2
 ghcr.io/sjzar/chatlog:latest
