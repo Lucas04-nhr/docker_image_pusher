@@ -1,4 +1,6 @@
 awwaawwa/pdfmathtranslate-next
+calciumion/new-api
+calciumion/new-api:1.0.0-rc.14
 fogforest/yesplaymusic
 hagb/docker-easyconnect
 hagb/docker-easyconnect:7.6.7
