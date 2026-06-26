@@ -1,6 +1,7 @@
 awwaawwa/pdfmathtranslate-next
 calciumion/new-api
 calciumion/new-api:v1.0.0-rc.14
+calciumion/new-api:v1.0.0-rc.15
 fogforest/yesplaymusic
 hagb/docker-easyconnect
 hagb/docker-easyconnect:7.6.7
@@ -20,5 +21,6 @@ ghcr.io/lakr233/assppweb:latest
 ghcr.io/moesnow/march7thassistant:latest
 ghcr.io/pocket-id/pocket-id
 ghcr.io/pocket-id/pocket-id:v2
+ghcr.io/pocket-id/pocket-id:v2.9.0
 ghcr.io/sjzar/chatlog:latest
 ghcr.io/vert-sh/vert
