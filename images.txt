@@ -37,7 +37,6 @@ ghcr.io/moesnow/march7thassistant:v2026.6.8
 
 ghcr.io/pocket-id/pocket-id
 ghcr.io/pocket-id/pocket-id:v2
-ghcr.io/pocket-id/pocket-id:v2.10.0
 ghcr.io/pocket-id/pocket-id:v2.11.0
 
 ghcr.io/vert-sh/vert:latest
