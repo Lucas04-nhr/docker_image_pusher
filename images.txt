@@ -20,6 +20,9 @@ redis:8.8.0
 redis:trixie
 redis:latest
 
+spotdl/spotify-downloader:latest
+spotdl/spotify-downloader:v4.5.0
+
 vaultwarden/server:latest
 vaultwarden/server:alpine
 vaultwarden/server:1.36.0
