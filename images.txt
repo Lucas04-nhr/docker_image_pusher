@@ -11,7 +11,7 @@ mysql:latest
 
 openlistteam/openlist
 openlistteam/openlist:latest-aio
-openlistteam/openlist:v4.2.2-aio
+openlistteam/openlist:v4.2.3-aio
 
 1panel/openresty:1.29.2.5-0-noble-amd64
 1panel/openresty:1.31.1.1-0-noble-amd64
@@ -38,7 +38,8 @@ ghcr.io/moesnow/march7thassistant:v2026.6.8
 
 ghcr.io/pocket-id/pocket-id
 ghcr.io/pocket-id/pocket-id:v2
-ghcr.io/pocket-id/pocket-id:v2.9.0
+ghcr.io/pocket-id/pocket-id:v2.10.0
+ghcr.io/pocket-id/pocket-id:v2.11.0
 
 ghcr.io/vert-sh/vert:latest
 ghcr.io/vert-sh/vert:sha-49821e5
