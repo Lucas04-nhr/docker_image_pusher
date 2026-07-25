@@ -24,7 +24,7 @@ spotdl/spotify-downloader:v4.5.0
 
 vaultwarden/server:latest
 vaultwarden/server:alpine
-vaultwarden/server:1.37.0
+vaultwarden/server:1.37.0-alpine
 
 ghcr.io/alam00000/bentopdf:latest
 ghcr.io/alam00000/bentopdf:v2.8.6
