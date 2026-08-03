@@ -2,6 +2,17 @@ name: Docker
 
 on:
   workflow_dispatch:
+    inputs:
+      runner_count:
+        description: "Number of parallel runners"
+        required: true
+        default: "4"
+        type: choice
+        options:
+          - "1"
+          - "2"
+          - "4"
+          - "8"
   schedule:
     - cron: "0 20 * * 0"
   push:
@@ -14,9 +25,44 @@ env:
   ALIYUN_REGISTRY_PASSWORD: "${{ secrets.ALIYUN_REGISTRY_PASSWORD }}"
 
 jobs:
-  build:
-    name: Pull
+  prepare:
+    name: Prepare runner shards
     runs-on: ubuntu-latest
+    outputs:
+      runner_count: ${{ steps.shards.outputs.runner_count }}
+      shards: ${{ steps.shards.outputs.shards }}
+    steps:
+      - name: Generate runner shards
+        id: shards
+        env:
+          REQUESTED_RUNNER_COUNT: ${{ github.event.inputs.runner_count }}
+        run: |
+          runner_count="${REQUESTED_RUNNER_COUNT:-4}"
+          case "$runner_count" in
+            1) shards='[0]' ;;
+            2) shards='[0,1]' ;;
+            4) shards='[0,1,2,3]' ;;
+            8) shards='[0,1,2,3,4,5,6,7]' ;;
+            *)
+              echo "Unsupported runner count: $runner_count" >&2
+              exit 1
+              ;;
+          esac
+
+          echo "runner_count=$runner_count" >> "$GITHUB_OUTPUT"
+          echo "shards=$shards" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Pull (shard ${{ matrix.shard }})
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJSON(needs.prepare.outputs.shards) }}
+    env:
+      SHARD_INDEX: ${{ matrix.shard }}
+      SHARD_COUNT: ${{ needs.prepare.outputs.runner_count }}
     steps:
       - name: Before freeing up disk space
         run: |
@@ -105,12 +151,21 @@ jobs:
           done < images.txt
 
 
+          image_index=0
           while IFS= read -r line || [ -n "$line" ]; do
               # 忽略空行与注释
               [[ -z "$line" ]] && continue
               if echo "$line" | grep -q '^\s*#'; then
                   continue
               fi
+
+              assigned_shard=$((image_index % SHARD_COUNT))
+              image_index=$((image_index + 1))
+              if (( assigned_shard != SHARD_INDEX )); then
+                  continue
+              fi
+
+              echo "shard $SHARD_INDEX/$SHARD_COUNT processing: $line"
 
               echo "docker pull $line"
               docker pull $line

@@ -31,6 +31,7 @@ https://cr.console.aliyun.com/<br>
 Fork本项目<br>
 #### 启动Action
 进入您自己的项目，点击Action，启用Github Action功能<br>
+手动运行时可选择并行 runner 数量（1、2、4 或 8），默认使用 4 个 runner；代码推送和定时任务同样默认使用 4 个 runner。<br>
 #### 配置环境变量
 进入Settings->Secret and variables->Actions->New Repository secret
 ![](doc/配置环境变量.png)
