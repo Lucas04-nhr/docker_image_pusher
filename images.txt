@@ -1,43 +1,48 @@
 calciumion/new-api
-calciumion/new-api:v1.0.0-rc.21
+calciumion/new-api:v1.0.0-rc.23
 
 hagb/docker-easyconnect
 hagb/docker-easyconnect:7.6.7
 
-mysql:8.4.10
-mysql:lts
 mysql:latest
+mysql:lts
+mysql:9.7.2
 
 openlistteam/openlist
 openlistteam/openlist:latest-aio
-openlistteam/openlist:v4.2.3-aio
+openlistteam/openlist:v4.2.4-aio
 
-1panel/openresty:1.29.2.5-0-noble-amd64
 1panel/openresty:1.31.1.1-0-noble-amd64
+1panel/openresty:1.31.1.2-2-noble-amd64
 
-redis:8.8.0
-redis:trixie
+redis:8.10.0
+redis:8.10.0-trixie
 redis:latest
+redis:trixie
 
 spotdl/spotify-downloader:latest
-spotdl/spotify-downloader:v4.5.0
+spotdl/spotify-downloader:v4.5.2
 
 vaultwarden/server:latest
 vaultwarden/server:alpine
-vaultwarden/server:1.37.0-alpine
+vaultwarden/server:1.37.1-alpine
 
 ghcr.io/alam00000/bentopdf:latest
-ghcr.io/alam00000/bentopdf:v2.8.6
+ghcr.io/alam00000/bentopdf:v2.8.7
+
+ghcr.io/alam00000/bentopdf-simple:latest
+ghcr.io/alam00000/bentopdf-simple:v2.8.7
 
 ghcr.io/lakr233/assppweb:latest
-ghcr.io/lakr233/assppweb:17359ec
+ghcr.io/lakr233/assppweb:c683fee
 
 ghcr.io/moesnow/march7thassistant:latest
-ghcr.io/moesnow/march7thassistant:v2026.6.8
+ghcr.io/moesnow/march7thassistant:v2026.7.26
 
 ghcr.io/pocket-id/pocket-id
+ghcr.io/pocket-id/pocket-id:next
 ghcr.io/pocket-id/pocket-id:v2
-ghcr.io/pocket-id/pocket-id:v2.11.0
+ghcr.io/pocket-id/pocket-id:v2.12.0
 
 ghcr.io/vert-sh/vert:latest
-ghcr.io/vert-sh/vert:sha-49821e5
+ghcr.io/vert-sh/vert:sha-e1c83ba
