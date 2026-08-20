@@ -6,14 +6,15 @@ hagb/docker-easyconnect:7.6.7
 
 mysql:latest
 mysql:lts
+mysql:8.4.11
 mysql:9.7.2
 
 openlistteam/openlist
 openlistteam/openlist:latest-aio
-openlistteam/openlist:v4.2.4-aio
+openlistteam/openlist:v4.2.5-aio
 
 1panel/openresty:1.31.1.1-0-noble-amd64
-1panel/openresty:1.31.1.1-2-2-noble-amd64
+1panel/openresty:1.31.1.1-2-3-noble-amd64
 
 redis:8.10.0
 redis:8.10.0-trixie
@@ -42,7 +43,7 @@ ghcr.io/moesnow/march7thassistant:v2026.7.26
 ghcr.io/pocket-id/pocket-id
 ghcr.io/pocket-id/pocket-id:next
 ghcr.io/pocket-id/pocket-id:v2
-ghcr.io/pocket-id/pocket-id:v2.12.0
+ghcr.io/pocket-id/pocket-id:v2.14.0
 
 ghcr.io/vert-sh/vert:latest
 ghcr.io/vert-sh/vert:sha-e1c83ba
