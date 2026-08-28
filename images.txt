@@ -16,8 +16,8 @@ openlistteam/openlist:v4.2.5-aio
 1panel/openresty:1.31.1.1-0-noble-amd64
 1panel/openresty:1.31.1.1-2-4-noble-amd64
 
-redis:8.10.0
-redis:8.10.0-trixie
+redis:8.10.1
+redis:8.10.1-trixie
 redis:latest
 redis:trixie
 
