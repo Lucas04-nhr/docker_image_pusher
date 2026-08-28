@@ -14,7 +14,7 @@ openlistteam/openlist:latest-aio
 openlistteam/openlist:v4.2.5-aio
 
 1panel/openresty:1.31.1.1-0-noble-amd64
-1panel/openresty:1.31.1.1-2-3-noble-amd64
+1panel/openresty:1.31.1.1-2-4-noble-amd64
 
 redis:8.10.0
 redis:8.10.0-trixie
@@ -26,7 +26,7 @@ spotdl/spotify-downloader:v4.5.2
 
 vaultwarden/server:latest
 vaultwarden/server:alpine
-vaultwarden/server:1.37.1-alpine
+vaultwarden/server:1.37.2-alpine
 
 ghcr.io/alam00000/bentopdf:latest
 ghcr.io/alam00000/bentopdf:v2.8.7
