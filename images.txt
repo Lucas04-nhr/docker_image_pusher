@@ -11,7 +11,7 @@ mysql:9.7.2
 
 openlistteam/openlist
 openlistteam/openlist:latest-aio
-openlistteam/openlist:v4.2.5-aio
+openlistteam/openlist:v4.2.6-aio
 
 1panel/openresty:1.31.1.1-0-noble-amd64
 1panel/openresty:1.31.1.1-2-4-noble-amd64
