@@ -1,6 +1,6 @@
 calciumion/new-api
-calciumion/new-api:v1.0.0-rc.37
-calciumion/new-api:v1.0.0-rc.38
+calciumion/new-api:v1.0.0-rc.39
+calciumion/new-api:v1.0.0-rc.40
 
 hagb/docker-easyconnect
 hagb/docker-easyconnect:7.6.7
