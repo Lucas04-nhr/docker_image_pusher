@@ -1,6 +1,5 @@
 calciumion/new-api
-calciumion/new-api:v1.0.0-rc.39
-calciumion/new-api:v1.0.0-rc.40
+calciumion/new-api:v1.0.0-rc.41
 
 hagb/docker-easyconnect
 hagb/docker-easyconnect:7.6.7
@@ -17,8 +16,8 @@ openlistteam/openlist:v4.2.6-aio
 1panel/openresty:1.31.1.1-0-noble-amd64
 1panel/openresty:1.31.1.1-2-4-noble-amd64
 
-redis:8.10.1
-redis:8.10.1-trixie
+redis:8.10.2
+redis:8.10.2-trixie
 redis:latest
 redis:trixie
 
@@ -44,7 +43,9 @@ ghcr.io/moesnow/march7thassistant:v2026.7.26
 ghcr.io/pocket-id/pocket-id
 ghcr.io/pocket-id/pocket-id:next
 ghcr.io/pocket-id/pocket-id:v2
-ghcr.io/pocket-id/pocket-id:v2.15.0
+ghcr.io/pocket-id/pocket-id:v2.16.0
+ghcr.io/pocket-id/pocket-id:v2.17.0
+ghcr.io/pocket-id/pocket-id:v2.18.0
 
 ghcr.io/vert-sh/vert:latest
 ghcr.io/vert-sh/vert:sha-e1c83ba
