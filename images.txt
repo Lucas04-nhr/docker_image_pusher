@@ -1,5 +1,5 @@
 calciumion/new-api
-calciumion/new-api:v1.0.0-rc.41
+calciumion/new-api:v1.0.0-rc.42
 
 hagb/docker-easyconnect
 hagb/docker-easyconnect:7.6.7
@@ -26,16 +26,18 @@ spotdl/spotify-downloader:v4.5.2
 
 vaultwarden/server:latest
 vaultwarden/server:alpine
-vaultwarden/server:1.37.3-alpine
+vaultwarden/server:1.37.4-alpine
 
 ghcr.io/alam00000/bentopdf:latest
-ghcr.io/alam00000/bentopdf:v2.8.7
+ghcr.io/alam00000/bentopdf:v2.8.8
 
 ghcr.io/alam00000/bentopdf-simple:latest
-ghcr.io/alam00000/bentopdf-simple:v2.8.7
+ghcr.io/alam00000/bentopdf-simple:v2.8.8
 
 ghcr.io/lakr233/assppweb:latest
-ghcr.io/lakr233/assppweb:c683fee
+ghcr.io/lakr233/assppweb:11aead3
+ghcr.io/lakr233/assppweb:3bc9515
+
 
 ghcr.io/moesnow/march7thassistant:latest
 ghcr.io/moesnow/march7thassistant:v2026.7.26
@@ -43,8 +45,6 @@ ghcr.io/moesnow/march7thassistant:v2026.7.26
 ghcr.io/pocket-id/pocket-id
 ghcr.io/pocket-id/pocket-id:next
 ghcr.io/pocket-id/pocket-id:v2
-ghcr.io/pocket-id/pocket-id:v2.16.0
-ghcr.io/pocket-id/pocket-id:v2.17.0
 ghcr.io/pocket-id/pocket-id:v2.18.0
 
 ghcr.io/vert-sh/vert:latest
