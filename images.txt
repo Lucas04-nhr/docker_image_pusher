@@ -49,4 +49,9 @@ ghcr.io/pocket-id/pocket-id:v2
 ghcr.io/pocket-id/pocket-id:v2.18.0
 
 ghcr.io/vert-sh/vert:latest
-ghcr.io/vert-sh/vert:sha-e1c83ba
+ghcr.io/vert-sh/vert:sha-f5ecdec
+ghcr.io/vert-sh/vert:sha-91091a1
+ghcr.io/vert-sh/vert:sha-07a3c67
+ghcr.io/vert-sh/vert:sha-c7b9f39
+ghcr.io/vert-sh/vert:sha-d5a847b
+ghcr.io/vert-sh/vert:sha-3e95d75
