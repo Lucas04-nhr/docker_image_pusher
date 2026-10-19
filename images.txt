@@ -29,10 +29,12 @@ vaultwarden/server:alpine
 vaultwarden/server:1.37.4-alpine
 
 ghcr.io/alam00000/bentopdf:latest
-ghcr.io/alam00000/bentopdf:v2.8.9
+ghcr.io/alam00000/bentopdf:edge
+ghcr.io/alam00000/bentopdf:v2.8.8
 
 ghcr.io/alam00000/bentopdf-simple:latest
-ghcr.io/alam00000/bentopdf-simple:v2.8.9
+ghcr.io/alam00000/bentopdf-simple:edge
+ghcr.io/alam00000/bentopdf-simple:v2.8.8
 
 ghcr.io/lakr233/assppweb:latest
 ghcr.io/lakr233/assppweb:11aead3

@@ -109,6 +109,14 @@ jobs:
 
       - name: Build and push image Aliyun
         run: |
+          warn_skipped_image() {
+              local message="$1"
+              message="${message//'%'/'%25'}"
+              message="${message//$'\r'/'%0D'}"
+              message="${message//$'\n'/'%0A'}"
+              printf '::warning file=images.txt,line=%s,title=Image skipped::%s\n' "$line_number" "$message"
+          }
+
           docker login -u $ALIYUN_REGISTRY_USER -p $ALIYUN_REGISTRY_PASSWORD $ALIYUN_REGISTRY
           # 数据预处理,判断镜像是否重名
           declare -A duplicate_images
@@ -152,7 +160,9 @@ jobs:
 
 
           image_index=0
+          line_number=0
           while IFS= read -r line || [ -n "$line" ]; do
+              line_number=$((line_number + 1))
               # 忽略空行与注释
               [[ -z "$line" ]] && continue
               if echo "$line" | grep -q '^\s*#'; then
@@ -168,7 +178,12 @@ jobs:
               echo "shard $SHARD_INDEX/$SHARD_COUNT processing: $line"
 
               echo "docker pull $line"
-              docker pull $line
+              if pull_output=$(docker pull $line 2>&1); then
+                  printf '%s\n' "$pull_output"
+              else
+                  warn_skipped_image "Skipping $line: docker pull failed. $pull_output"
+                  continue
+              fi
               platform=$(echo "$line" | awk -F'--platform[ =]' '{if (NF>1) print $2}' | awk '{print $1}')
               echo "platform is $platform"
               # 如果存在架构信息 将架构信息拼到镜像名称前面
@@ -201,7 +216,13 @@ jobs:
               image_name_tag="${image_name_tag%%@*}"
               new_image="$ALIYUN_REGISTRY/$ALIYUN_NAME_SPACE/$platform_prefix$name_space_prefix$image_name_tag"
               echo "docker tag $image $new_image"
-              docker tag $image $new_image
+              if tag_output=$(docker tag "$image" "$new_image" 2>&1); then
+                  printf '%s\n' "$tag_output"
+              else
+                  warn_skipped_image "Skipping $image: docker tag to $new_image failed. $tag_output"
+                  docker rmi "$image" || true
+                  continue
+              fi
               echo "docker push $new_image"
               docker push $new_image
               echo "开始清理磁盘空间"
