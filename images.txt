@@ -1,5 +1,5 @@
 calciumion/new-api
-calciumion/new-api:v1.0.0-rc.45
+calciumion/new-api:v1.0.0-rc.46
 
 hagb/docker-easyconnect
 hagb/docker-easyconnect:7.6.7
@@ -47,7 +47,8 @@ ghcr.io/moesnow/march7thassistant:v2026.7.26
 ghcr.io/pocket-id/pocket-id
 ghcr.io/pocket-id/pocket-id:next
 ghcr.io/pocket-id/pocket-id:v2
-ghcr.io/pocket-id/pocket-id:v2.18.0
+ghcr.io/pocket-id/pocket-id:v2.19.0
+ghcr.io/pocket-id/pocket-id:v2.19.1
 
 ghcr.io/vert-sh/vert:latest
 ghcr.io/vert-sh/vert:sha-f5ecdec
