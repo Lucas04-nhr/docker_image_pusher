@@ -1,5 +1,5 @@
 calciumion/new-api
-calciumion/new-api:v1.0.0-rc.46
+calciumion/new-api:v1.0.0-rc.47
 
 hagb/docker-easyconnect
 hagb/docker-easyconnect:7.6.7
@@ -30,7 +30,7 @@ vaultwarden/server:1.37.4-alpine
 
 ghcr.io/alam00000/bentopdf:latest
 ghcr.io/alam00000/bentopdf:edge
-ghcr.io/alam00000/bentopdf:v2.8.8
+ghcr.io/alam00000/bentopdf:v2.8.10
 
 ghcr.io/alam00000/bentopdf-simple:latest
 ghcr.io/alam00000/bentopdf-simple:edge
@@ -47,13 +47,9 @@ ghcr.io/moesnow/march7thassistant:v2026.7.26
 ghcr.io/pocket-id/pocket-id
 ghcr.io/pocket-id/pocket-id:next
 ghcr.io/pocket-id/pocket-id:v2
-ghcr.io/pocket-id/pocket-id:v2.19.0
 ghcr.io/pocket-id/pocket-id:v2.19.1
 
 ghcr.io/vert-sh/vert:latest
+ghcr.io/vert-sh/vert:sha-257bcb3
+ghcr.io/vert-sh/vert:sha-b3b04c2
 ghcr.io/vert-sh/vert:sha-f5ecdec
-ghcr.io/vert-sh/vert:sha-91091a1
-ghcr.io/vert-sh/vert:sha-07a3c67
-ghcr.io/vert-sh/vert:sha-c7b9f39
-ghcr.io/vert-sh/vert:sha-d5a847b
-ghcr.io/vert-sh/vert:sha-3e95d75
