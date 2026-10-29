@@ -7,8 +7,6 @@ hagb/docker-easyconnect:7.6.7
 mysql:latest
 mysql:lts
 mysql:8.4.13
-mysql:8.4.12
-mysql:9.7.3
 mysql:9.7.4
 
 openlistteam/openlist
@@ -39,7 +37,6 @@ ghcr.io/alam00000/bentopdf-simple:v2.8.10
 
 ghcr.io/lakr233/assppweb:latest
 ghcr.io/lakr233/assppweb:0.1.0
-
 
 ghcr.io/moesnow/march7thassistant:latest
 ghcr.io/moesnow/march7thassistant:v2026.7.26
