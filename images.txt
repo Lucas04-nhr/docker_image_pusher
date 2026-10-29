@@ -14,11 +14,11 @@ openlistteam/openlist:latest-aio
 openlistteam/openlist:v4.2.8-aio
 openlistteam/openlist:v4.2.9-aio
 
-1panel/openresty:1.31.1.1-0-noble-amd64
 1panel/openresty:1.31.1.1-2-4-noble-amd64
+1panel/openresty:1.31.8.1-2-1-noble-amd64
 
-redis:8.10.2
-redis:8.10.2-trixie
+redis:8.10.3
+redis:8.10.3-trixie
 redis:latest
 redis:trixie
 

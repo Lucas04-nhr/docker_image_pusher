@@ -31,7 +31,52 @@ jobs:
     outputs:
       runner_count: ${{ steps.shards.outputs.runner_count }}
       shards: ${{ steps.shards.outputs.shards }}
+      selected_lines: ${{ steps.images.outputs.selected_lines }}
+      has_images: ${{ steps.images.outputs.has_images }}
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Select images to sync
+        id: images
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+        shell: python
+        run: |
+          import os
+          import subprocess
+          from pathlib import Path
+
+          def entries(text):
+              return {
+                  number: " ".join(line.split())
+                  for number, line in enumerate(text.splitlines(), 1)
+                  if line.strip() and not line.lstrip().startswith("#")
+              }
+
+          previous = set()
+          before = os.environ.get("BEFORE_SHA", "")
+          if os.environ["GITHUB_EVENT_NAME"] == "push" and before and set(before) != {"0"}:
+              # A force push may leave the previous tip outside the checked-out history.
+              if subprocess.run(["git", "cat-file", "-e", before], capture_output=True).returncode:
+                  subprocess.run(["git", "fetch", "origin", before], check=True)
+              paths = subprocess.check_output(
+                  ["git", "ls-tree", "--name-only", before, "--", "images.txt"], text=True
+              )
+              if paths.strip():
+                  old_text = subprocess.check_output(["git", "show", f"{before}:images.txt"], text=True)
+                  previous = set(entries(old_text).values())
+
+          path = Path("images.txt")
+          current = entries(path.read_text() if path.exists() else "")
+          selected = [str(number) for number, entry in current.items() if entry not in previous]
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write(f"selected_lines={','.join(selected)}\n")
+              output.write(f"has_images={'true' if selected else 'false'}\n")
+          print(f"Selected {len(selected)} image entries for synchronization.")
+
       - name: Generate runner shards
         id: shards
         env:
@@ -55,12 +100,14 @@ jobs:
   build:
     name: Pull (shard ${{ matrix.shard }})
     needs: prepare
+    if: needs.prepare.outputs.has_images == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         shard: ${{ fromJSON(needs.prepare.outputs.shards) }}
     env:
+      SELECTED_LINES: ${{ needs.prepare.outputs.selected_lines }}
       SHARD_INDEX: ${{ matrix.shard }}
       SHARD_COUNT: ${{ needs.prepare.outputs.runner_count }}
     steps:
@@ -168,6 +215,12 @@ jobs:
               if echo "$line" | grep -q '^\s*#'; then
                   continue
               fi
+
+              # Keep original line numbers and use the full list for duplicate-name detection.
+              case ",$SELECTED_LINES," in
+                  *",$line_number,"*) ;;
+                  *) continue ;;
+              esac
 
               assigned_shard=$((image_index % SHARD_COUNT))
               image_index=$((image_index + 1))
