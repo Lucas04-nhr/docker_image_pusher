@@ -6,21 +6,21 @@ hagb/docker-easyconnect:7.6.7
 
 mysql:latest
 mysql:lts
-mysql:8.4.11
-mysql:9.7.2
+mysql:8.4.13
+mysql:8.4.12
+mysql:9.7.3
+mysql:9.7.4
 
 openlistteam/openlist
 openlistteam/openlist:latest-aio
-openlistteam/openlist:v4.2.8-aio
 openlistteam/openlist:v4.2.9-aio
 
-1panel/openresty:1.31.1.1-2-4-noble-amd64
 1panel/openresty:1.31.8.1-2-1-noble-amd64
 
-redis:8.10.3
-redis:8.10.3-trixie
 redis:latest
 redis:trixie
+redis:8.10.3
+redis:8.10.3-trixie
 
 spotdl/spotify-downloader:latest
 spotdl/spotify-downloader:v4.5.2
@@ -35,11 +35,10 @@ ghcr.io/alam00000/bentopdf:v2.8.10
 
 ghcr.io/alam00000/bentopdf-simple:latest
 ghcr.io/alam00000/bentopdf-simple:edge
-ghcr.io/alam00000/bentopdf-simple:v2.8.8
+ghcr.io/alam00000/bentopdf-simple:v2.8.10
 
 ghcr.io/lakr233/assppweb:latest
-ghcr.io/lakr233/assppweb:11aead3
-ghcr.io/lakr233/assppweb:3bc9515
+ghcr.io/lakr233/assppweb:0.1.0
 
 
 ghcr.io/moesnow/march7thassistant:latest
@@ -52,5 +51,3 @@ ghcr.io/pocket-id/pocket-id:v2.19.1
 
 ghcr.io/vert-sh/vert:latest
 ghcr.io/vert-sh/vert:sha-257bcb3
-ghcr.io/vert-sh/vert:sha-b3b04c2
-ghcr.io/vert-sh/vert:sha-f5ecdec
