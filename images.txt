@@ -29,22 +29,30 @@ vaultwarden/server:1.37.4-alpine
 
 ghcr.io/alam00000/bentopdf:latest
 ghcr.io/alam00000/bentopdf:edge
-ghcr.io/alam00000/bentopdf:v2.8.10
+ghcr.io/alam00000/bentopdf:v2.8.11
 
 ghcr.io/alam00000/bentopdf-simple:latest
 ghcr.io/alam00000/bentopdf-simple:edge
-ghcr.io/alam00000/bentopdf-simple:v2.8.10
+ghcr.io/alam00000/bentopdf-simple:v2.8.11
 
 ghcr.io/lakr233/assppweb:latest
 ghcr.io/lakr233/assppweb:0.1.0
 
 ghcr.io/moesnow/march7thassistant:latest
-ghcr.io/moesnow/march7thassistant:v2026.7.26
+ghcr.io/moesnow/march7thassistant:v2026.8.28
+ghcr.io/moesnow/march7thassistant:v2026.9.7
+ghcr.io/moesnow/march7thassistant:v2026.9.23
+ghcr.io/moesnow/march7thassistant:v2026.9.24
+ghcr.io/moesnow/march7thassistant:v2026.9.25
+ghcr.io/moesnow/march7thassistant:v2026.9.30
+ghcr.io/moesnow/march7thassistant:v2026.10.3
+ghcr.io/moesnow/march7thassistant:v2026.10.16
+ghcr.io/moesnow/march7thassistant:v2026.10.31
 
 ghcr.io/pocket-id/pocket-id
 ghcr.io/pocket-id/pocket-id:next
 ghcr.io/pocket-id/pocket-id:v2
-ghcr.io/pocket-id/pocket-id:v2.19.1
+ghcr.io/pocket-id/pocket-id:v2.19.2
 
 ghcr.io/vert-sh/vert:latest
 ghcr.io/vert-sh/vert:sha-257bcb3
