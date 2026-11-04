@@ -15,6 +15,7 @@ on:
           - "8"
   schedule:
     - cron: "0 4 * * 1"
+      timezone: "Europe/Copenhagen"
   push:
     branches: [main]
 
@@ -334,7 +335,8 @@ jobs:
   notify:
     name: Notify image updates
     needs: [prepare, build]
-    if: always() && needs.prepare.outputs.update_count != '' && needs.prepare.outputs.update_count != '0'
+    # Manual runs are a full re-sync without detection, so they have nothing to report.
+    if: always() && needs.prepare.outputs.update_count != '' && github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Send ServerChan push
@@ -342,6 +344,7 @@ jobs:
           SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
           UPDATE_COUNT: ${{ needs.prepare.outputs.update_count }}
           UPDATE_REPORT: ${{ needs.prepare.outputs.update_report }}
+          HAS_IMAGES: ${{ needs.prepare.outputs.has_images }}
           BUILD_RESULT: ${{ needs.build.result }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
@@ -356,14 +359,30 @@ jobs:
           uid="${BASH_REMATCH[1]}"
           echo "::add-mask::$uid"
 
-          desp="$UPDATE_REPORT
+          if [ "$UPDATE_COUNT" != "0" ]; then
+            title="Image updates detected: $UPDATE_COUNT"
+            desp="$UPDATE_REPORT
 
           Sync result: \`$BUILD_RESULT\`
 
-          A failed image pull does not fail the sync job. Check the [workflow run]($RUN_URL) for \`Image skipped\` warnings."
+          Check the [workflow run]($RUN_URL) for detailed logs."
+          elif [ "$HAS_IMAGES" = "true" ]; then
+            # Entries whose source could not be inspected are still synced, but do not count as updates.
+            title="No image updates detected"
+            desp="Some source images could not be compared, so they were synced anyway.
+
+          Sync result: \`$BUILD_RESULT\`
+
+          Check the [workflow run]($RUN_URL) for detailed logs."
+          else
+            title="No image updates detected"
+            desp="All images are up to date.
+
+          Check the [workflow run]($RUN_URL) for detailed logs."
+          fi
 
           response=$(curl -sS --fail-with-body --retry 3 \
-            --data-urlencode "title=Image updates detected: $UPDATE_COUNT" \
+            --data-urlencode "title=$title" \
             --data-urlencode "desp=$desp" \
             --data-urlencode "tags=GitHub" \
             "https://$uid.push.ft07.com/send/$SERVERCHAN_SENDKEY.send")
