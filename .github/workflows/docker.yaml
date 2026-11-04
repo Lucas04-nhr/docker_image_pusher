@@ -35,6 +35,7 @@ jobs:
       sync_plan: ${{ steps.images.outputs.sync_plan }}
       has_images: ${{ steps.images.outputs.has_images }}
       update_count: ${{ steps.images.outputs.update_count }}
+      update_summary: ${{ steps.images.outputs.update_summary }}
       update_report: ${{ steps.images.outputs.update_report }}
     steps:
       - name: Checkout Code
@@ -185,9 +186,20 @@ jobs:
               )
               message = message.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
               print(f"::notice file=images.txt,title=Image updates detected: {len(updates)}::{message}")
+
+          # Card text for the push, e.g. "8 updated, 2 missing". The push body has the details.
+          changed = sum(1 for _, old, _ in updates if old)
+          counts = (
+              (changed, "updated"),
+              (len(updates) - changed, "missing"),
+              (len(selected) - len(updates), "not compared"),
+          )
+          summary = ", ".join(f"{count} {label}" for count, label in counts if count) or "0 updated"
+
           with open(os.environ["GITHUB_OUTPUT"], "a") as output:
               delimiter = f"REPORT_{uuid.uuid4().hex}"
               output.write(f"update_count={len(updates)}\n")
+              output.write(f"update_summary={summary}\n")
               output.write(f"update_report<<{delimiter}\n{report}\n{delimiter}\n")
               output.write(f"sync_plan={json.dumps(plan)}\n")
               output.write(f"has_images={'true' if plan else 'false'}\n")
@@ -343,6 +355,7 @@ jobs:
         env:
           SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
           UPDATE_COUNT: ${{ needs.prepare.outputs.update_count }}
+          UPDATE_SUMMARY: ${{ needs.prepare.outputs.update_summary }}
           UPDATE_REPORT: ${{ needs.prepare.outputs.update_report }}
           HAS_IMAGES: ${{ needs.prepare.outputs.has_images }}
           BUILD_RESULT: ${{ needs.build.result }}
@@ -384,6 +397,7 @@ jobs:
           response=$(curl -sS --fail-with-body --retry 3 \
             --data-urlencode "title=$title" \
             --data-urlencode "desp=$desp" \
+            --data-urlencode "short=$UPDATE_SUMMARY" \
             --data-urlencode "tags=GitHub" \
             "https://$uid.push.ft07.com/send/$SERVERCHAN_SENDKEY.send")
           # The response may carry a read key and the logs are public, so print only the status.
