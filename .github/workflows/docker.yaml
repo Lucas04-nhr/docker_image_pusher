@@ -14,7 +14,7 @@ on:
           - "4"
           - "8"
   schedule:
-    - cron: "0 20 * * 0"
+    - cron: "0 4 * * 1"
   push:
     branches: [main]
 
@@ -142,10 +142,10 @@ jobs:
                   target_digest = config_digest(target, platform)
               except Exception as error:
                   print(f"sync   {entry}: target not comparable ({type(error).__name__})")
-                  return True, f"{entry}: 目标仓库中不存在或无法读取"
+                  return True, (entry, None, None)
               if source_digest != target_digest:
                   print(f"sync   {entry}: {target_digest} -> {source_digest}")
-                  return True, f"{entry}: {target_digest[7:19]} -> {source_digest[7:19]}"
+                  return True, (entry, target_digest[7:19], source_digest[7:19])
               print(f"latest {entry}")
               return False, None
 
@@ -170,11 +170,20 @@ jobs:
               for number in selected
           ]
 
-          report = "\n".join(updates)
+          missing = "missing or unreadable in the target registry"
+          # Annotations do not render Markdown, so only the push report uses code formatting.
+          report = "\n".join(
+              f"- `{entry}`: `{old}` -> `{new}`" if old else f"- `{entry}`: {missing}"
+              for entry, old, new in updates
+          )
           if updates:
               # One annotation per run, because GitHub shows at most 10 notices per step.
-              message = report.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
-              print(f"::notice file=images.txt,title=检测到 {len(updates)} 个镜像更新::{message}")
+              message = "\n".join(
+                  f"{entry}: {old} -> {new}" if old else f"{entry}: {missing}"
+                  for entry, old, new in updates
+              )
+              message = message.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+              print(f"::notice file=images.txt,title=Image updates detected: {len(updates)}::{message}")
           with open(os.environ["GITHUB_OUTPUT"], "a") as output:
               delimiter = f"REPORT_{uuid.uuid4().hex}"
               output.write(f"update_count={len(updates)}\n")
@@ -347,15 +356,16 @@ jobs:
           uid="${BASH_REMATCH[1]}"
           echo "::add-mask::$uid"
 
-          desp="$(printf '%s\n' "$UPDATE_REPORT" | sed 's/^/- /')
+          desp="$UPDATE_REPORT
 
-          同步任务结果：$BUILD_RESULT
+          Sync result: \`$BUILD_RESULT\`
 
-          单个镜像拉取失败不会让任务失败，请在[运行页面]($RUN_URL)查看 Image skipped 警告。"
+          A failed image pull does not fail the sync job. Check the [workflow run]($RUN_URL) for \`Image skipped\` warnings."
 
           response=$(curl -sS --fail-with-body --retry 3 \
-            --data-urlencode "title=检测到 $UPDATE_COUNT 个镜像更新" \
+            --data-urlencode "title=Image updates detected: $UPDATE_COUNT" \
             --data-urlencode "desp=$desp" \
+            --data-urlencode "tags=GitHub" \
             "https://$uid.push.ft07.com/send/$SERVERCHAN_SENDKEY.send")
           # The response may carry a read key and the logs are public, so print only the status.
           jq -r '"code=\(.code // "none") message=\(.message // "")"' <<< "$response"
