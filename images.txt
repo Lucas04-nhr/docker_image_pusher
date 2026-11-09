@@ -39,7 +39,7 @@ ghcr.io/lakr233/assppweb:latest
 ghcr.io/lakr233/assppweb:0.1.0
 
 ghcr.io/moesnow/march7thassistant:latest
-ghcr.io/moesnow/march7thassistant:v2026.11.8
+ghcr.io/moesnow/march7thassistant:v2026.11.9-beta
 
 ghcr.io/pocket-id/pocket-id
 ghcr.io/pocket-id/pocket-id:next
