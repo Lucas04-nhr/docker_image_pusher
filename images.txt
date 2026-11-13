@@ -1,5 +1,6 @@
 calciumion/new-api:latest
-calciumion/new-api:v1.0.0-rc.49
+calciumion/new-api:v1.0.0-rc.50
+calciumion/new-api:v1.0.0-rc.51
 
 hagb/docker-easyconnect
 hagb/docker-easyconnect:7.6.7
@@ -25,6 +26,7 @@ spotdl/spotify-downloader:v4.6.0
 
 vaultwarden/server:latest
 vaultwarden/server:alpine
+vaultwarden/server:testing-alpine
 vaultwarden/server:1.37.5-alpine
 
 ghcr.io/alam00000/bentopdf:latest
