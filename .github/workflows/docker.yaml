@@ -214,7 +214,9 @@ jobs:
               for item in groups[repository]:
                   item["shard"] = shard
 
-          missing = "missing or unreadable in the target registry"
+          # Detected before the sync: the tag was not in the target registry yet. Whether the copy
+          # worked is reported separately as the sync result.
+          missing = "new tag, not in the target registry before this run"
           # Annotations do not render Markdown, so only the push report uses code formatting.
           report = "\n".join(
               f"- `{entry}`: `{old}` -> `{new}`" if old else f"- `{entry}`: {missing}"
@@ -229,11 +231,11 @@ jobs:
               message = message.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
               print(f"::notice file=images.txt,title=Image updates detected: {len(updates)}::{message}")
 
-          # Card text for the push, e.g. "8 updated, 2 missing". The push body has the details.
+          # Card text for the push, e.g. "8 updated, 2 new". The push body has the details.
           changed = sum(1 for _, old, _ in updates if old)
           counts = (
               (changed, "updated"),
-              (len(updates) - changed, "missing"),
+              (len(updates) - changed, "new"),
               (len(selected) - len(updates), "not compared"),
           )
           summary = ", ".join(f"{count} {label}" for count, label in counts if count) or "0 updated"
@@ -387,9 +389,11 @@ jobs:
 
           if [ "$UPDATE_COUNT" != "0" ]; then
             title="Image updates detected: $UPDATE_COUNT"
-            desp="$UPDATE_REPORT
+            desp="Detected before syncing:
 
-          Sync result: \`$BUILD_RESULT\`
+          $UPDATE_REPORT
+
+          Sync result: \`$BUILD_RESULT\` (skipped images appear as warnings in the run)
 
           Check the [workflow run]($RUN_URL) for detailed logs."
           elif [ "$HAS_IMAGES" = "true" ]; then
