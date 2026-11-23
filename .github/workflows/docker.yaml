@@ -19,6 +19,12 @@ on:
   push:
     branches: [main]
 
+# Overlapping runs push the same blobs to the same repository at the same time, which stalls uploads.
+# A newer pending run replaces an older pending one; it re-checks every image, so nothing is lost.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 env:
   ALIYUN_REGISTRY: "${{ vars.ALIYUN_REGISTRY }}"
   ALIYUN_NAMESPACE: "${{ vars.ALIYUN_NAMESPACE }}"
@@ -58,8 +64,30 @@ jobs:
           fi
           printf '%s' "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
 
+      - name: Generate runner shards
+        id: shards
+        env:
+          REQUESTED_RUNNER_COUNT: ${{ github.event.inputs.runner_count }}
+        run: |
+          runner_count="${REQUESTED_RUNNER_COUNT:-4}"
+          case "$runner_count" in
+            1) shards='[0]' ;;
+            2) shards='[0,1]' ;;
+            4) shards='[0,1,2,3]' ;;
+            8) shards='[0,1,2,3,4,5,6,7]' ;;
+            *)
+              echo "Unsupported runner count: $runner_count" >&2
+              exit 1
+              ;;
+          esac
+
+          echo "runner_count=$runner_count" >> "$GITHUB_OUTPUT"
+          echo "shards=$shards" >> "$GITHUB_OUTPUT"
+
       - name: Select images to sync
         id: images
+        env:
+          RUNNER_COUNT: ${{ steps.shards.outputs.runner_count }}
         shell: python
         run: |
           import json
@@ -168,9 +196,23 @@ jobs:
                   "entry": current[number],
                   "image": current[number].split()[-1],
                   "target_name": target_name(current[number]),
+                  "platform": platform_of(current[number]) or "linux/amd64",
               }
               for number in selected
           ]
+
+          # Tags of one target repository share most layers. On one shard they are copied one after
+          # another, so later tags skip the layers already uploaded instead of racing a parallel
+          # upload of the same blobs, which stalled pushes for hours.
+          groups = {}
+          for item in plan:
+              groups.setdefault(item["target_name"].split(":")[0], []).append(item)
+          load = [0] * int(os.environ["RUNNER_COUNT"])
+          for repository in sorted(groups, key=lambda name: (-len(groups[name]), name)):
+              shard = load.index(min(load))
+              load[shard] += len(groups[repository])
+              for item in groups[repository]:
+                  item["shard"] = shard
 
           missing = "missing or unreadable in the target registry"
           # Annotations do not render Markdown, so only the push report uses code formatting.
@@ -204,32 +246,16 @@ jobs:
               output.write(f"sync_plan={json.dumps(plan)}\n")
               output.write(f"has_images={'true' if plan else 'false'}\n")
           print(f"Selected {len(selected)} image entries for synchronization.")
-
-      - name: Generate runner shards
-        id: shards
-        env:
-          REQUESTED_RUNNER_COUNT: ${{ github.event.inputs.runner_count }}
-        run: |
-          runner_count="${REQUESTED_RUNNER_COUNT:-4}"
-          case "$runner_count" in
-            1) shards='[0]' ;;
-            2) shards='[0,1]' ;;
-            4) shards='[0,1,2,3]' ;;
-            8) shards='[0,1,2,3,4,5,6,7]' ;;
-            *)
-              echo "Unsupported runner count: $runner_count" >&2
-              exit 1
-              ;;
-          esac
-
-          echo "runner_count=$runner_count" >> "$GITHUB_OUTPUT"
-          echo "shards=$shards" >> "$GITHUB_OUTPUT"
+          for item in plan:
+              print(f"shard {item['shard']}: {item['entry']}")
 
   build:
     name: Pull (shard ${{ matrix.shard }})
     needs: prepare
     if: needs.prepare.outputs.has_images == 'true'
     runs-on: ubuntu-latest
+    # Backstop only. Each copy attempt has its own, much shorter timeout.
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
@@ -237,60 +263,51 @@ jobs:
     env:
       SYNC_PLAN: ${{ needs.prepare.outputs.sync_plan }}
       SHARD_INDEX: ${{ matrix.shard }}
-      SHARD_COUNT: ${{ needs.prepare.outputs.runner_count }}
+      # A healthy copy takes under 3 minutes. A stalled upload to Aliyun never recovers on its own,
+      # so it is killed after this long and retried; layers that already arrived are skipped.
+      COPY_TIMEOUT: 10m
+      COPY_ATTEMPTS: 3
     steps:
-      - name: Before freeing up disk space
-        run: |
-          echo "Before freeing up disk space"
-          echo "=============================================================================="
-          df -hT
-          echo "=============================================================================="
-
-      # 增加可用磁盘空间
-      - name: Maximize build space
-        uses: easimon/maximize-build-space@master
-        with:
-          root-reserve-mb: 1024
-          swap-size-mb: 512
-          remove-dotnet: "true"
-          remove-haskell: "true"
-          # 如果空间还是不够用，可以把以下开启，清理出更多空间
-          remove-android: "true"
-          remove-codeql: "true"
-          build-mount-path: "/var/lib/docker/"
-
-      - name: Restart docker
-        run: sudo service docker restart
-
-      - name: Initial Docker Cleanup
-        run: |
-          echo "Initial Docker Cleanup"
-          docker system prune -af --volumes
-          docker image prune -a -f
-          docker builder prune -a -f
-
-      - name: Free up disk space complete
-        run: |
-          echo "Free up disk space complete"
-          echo "=============================================================================="
-          df -hT
-          echo "=============================================================================="
-
-      - name: Docker Setup Buildx
-        uses: docker/setup-buildx-action@v4
-
-      - name: Log in to Docker Hub
+      # skopeo copies straight from the source registry to Aliyun, so nothing is stored on the runner.
+      - name: Set up skopeo
         env:
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
-          if [ -z "$DOCKERHUB_USERNAME" ] || [ -z "$DOCKERHUB_TOKEN" ]; then
-            echo "Docker Hub credentials are not set, using the anonymous rate limit."
-            exit 0
+          if ! command -v skopeo > /dev/null; then
+              sudo apt-get update -qq
+              sudo apt-get install -y -qq skopeo
           fi
-          printf '%s' "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+          skopeo --version
 
-      - name: Build and push image Aliyun
+          echo "REGISTRY_AUTH_FILE=$RUNNER_TEMP/auth.json" >> "$GITHUB_ENV"
+          export REGISTRY_AUTH_FILE="$RUNNER_TEMP/auth.json"
+
+          retry() {
+              local attempt
+              for attempt in 1 2 3; do
+                  "$@" && return 0
+                  echo "Attempt $attempt of $* failed."
+                  sleep $((attempt * 10))
+              done
+              return 1
+          }
+          login_aliyun() {
+              printf '%s' "$ALIYUN_REGISTRY_PASSWORD" | skopeo login -u "$ALIYUN_REGISTRY_USER" --password-stdin "$ALIYUN_REGISTRY"
+          }
+          login_dockerhub() {
+              printf '%s' "$DOCKERHUB_TOKEN" | skopeo login -u "$DOCKERHUB_USERNAME" --password-stdin docker.io
+          }
+
+          # A login once failed with "connection reset by peer" and took the whole shard down.
+          retry login_aliyun
+          if [ -z "$DOCKERHUB_USERNAME" ] || [ -z "$DOCKERHUB_TOKEN" ]; then
+              echo "Docker Hub credentials are not set, using the anonymous rate limit."
+          else
+              retry login_dockerhub
+          fi
+
+      - name: Copy images to Aliyun
         run: |
           warn_skipped_image() {
               local message="$1"
@@ -300,49 +317,45 @@ jobs:
               printf '::warning file=images.txt,line=%s,title=Image skipped::%s\n' "$line_number" "$message"
           }
 
-          docker login -u $ALIYUN_REGISTRY_USER -p $ALIYUN_REGISTRY_PASSWORD $ALIYUN_REGISTRY
-          # 同步计划（含目标镜像名）由 prepare job 统一生成，这里只取属于当前分片的条目
-          jq -r --argjson count "$SHARD_COUNT" --argjson index "$SHARD_INDEX" \
-              'to_entries[] | select(.key % $count == $index) | .value | [.line, .entry, .image, .target_name] | @tsv' \
+          # Only the manifest for one platform is copied, never the whole index. This also leaves out
+          # attestation manifests (config application/vnd.oci.empty.v1+json), which Aliyun rejects.
+          copy_image() {
+              local os arch variant attempt status
+              IFS=/ read -r os arch variant <<< "$platform"
+              for ((attempt = 1; attempt <= COPY_ATTEMPTS; attempt++)); do
+                  echo "skopeo copy $image -> $new_image ($platform, attempt $attempt/$COPY_ATTEMPTS)"
+                  timeout --kill-after=30s "$COPY_TIMEOUT" \
+                      skopeo copy --retry-times 2 \
+                          --override-os "$os" --override-arch "$arch" ${variant:+--override-variant "$variant"} \
+                          "docker://$image" "docker://$new_image" < /dev/null && return 0
+                  status=$?
+                  # timeout exits with 124 when the copy hung for the whole COPY_TIMEOUT.
+                  echo "Attempt $attempt failed with exit code $status."
+                  ((attempt < COPY_ATTEMPTS)) && sleep $((attempt * 15))
+              done
+              return 1
+          }
+
+          # 同步计划（含目标镜像名和分片）由 prepare job 统一生成，这里只取属于当前分片的条目
+          jq -r --argjson index "$SHARD_INDEX" \
+              '.[] | select(.shard == $index) | [.line, .entry, .image, .target_name, .platform] | @tsv' \
               <<< "$SYNC_PLAN" > "$RUNNER_TEMP/shard.tsv"
 
-          while IFS=$'\t' read -r line_number line image target_name; do
-              echo "shard $SHARD_INDEX/$SHARD_COUNT processing: $line"
-
-              echo "docker pull $line"
-              if pull_output=$(docker pull $line 2>&1); then
-                  printf '%s\n' "$pull_output"
-              else
-                  warn_skipped_image "Skipping $line: docker pull failed. $pull_output"
-                  continue
-              fi
+          failed=0
+          while IFS=$'\t' read -r line_number line image target_name platform; do
+              echo "::group::shard $SHARD_INDEX processing: $line"
               new_image="$ALIYUN_REGISTRY/$ALIYUN_NAMESPACE/$target_name"
-              echo "docker tag $image $new_image"
-              if tag_output=$(docker tag "$image" "$new_image" 2>&1); then
-                  printf '%s\n' "$tag_output"
+              started=$SECONDS
+              if copy_image; then
+                  echo "Copied $image in $((SECONDS - started))s."
               else
-                  warn_skipped_image "Skipping $image: docker tag to $new_image failed. $tag_output"
-                  docker rmi "$image" || true
-                  continue
+                  failed=$((failed + 1))
+                  warn_skipped_image "Skipping $line: skopeo copy failed $COPY_ATTEMPTS times (timeout $COPY_TIMEOUT each). See the job log for details."
               fi
-              echo "docker push $new_image"
-              docker push $new_image
-              echo "开始清理磁盘空间"
-              echo "=============================================================================="
-              df -hT
-              echo "=============================================================================="
-              docker rmi $image
-              docker rmi $new_image
-              # 更激进的清理策略
-              docker image prune -f
-              docker builder prune -af
-              docker system prune -f --volumes
-              echo "磁盘空间清理完毕"
-              echo "=============================================================================="
-              df -hT
-              echo "=============================================================================="
-
+              echo "::endgroup::"
           done < "$RUNNER_TEMP/shard.tsv"
+
+          echo "Shard $SHARD_INDEX finished, $failed image(s) skipped."
 
   notify:
     name: Notify image updates
